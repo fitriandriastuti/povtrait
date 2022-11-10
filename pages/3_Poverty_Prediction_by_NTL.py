@@ -43,7 +43,7 @@ df = pd.read_excel("data/NTL and Poverty.xlsx")
 df['Year'] = df['Year'].astype(str)
 
 # Create multiple tabs
-vis_tab, pred_single_tab, pred_batch_tab,  = st.tabs(["Visualisation", "Single Prediction", "Batch Prediction"])
+vis_tab, pred_single_tab, pred_batch_tab  = st.tabs(["Visualisation", "Single Poverty Prediction", "Batch Poverty Prediction"])
 
 ###### Tab 1: Visualisation ######
 with vis_tab:
