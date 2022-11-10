@@ -48,6 +48,7 @@ st.image(image, width=600)
 st.title('Poverty Potrait Dashboard')
 today = datetime.datetime.now()
 
+
 price_data = pd.read_excel("data/Gas and Food Price.xlsx")
 #df.rename(columns={'Date(Monthly)': 'Date'}, inplace=True)
 
