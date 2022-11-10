@@ -21,6 +21,35 @@ st.set_page_config(
     layout="wide",
 )
 
+st.sidebar.title("About")
+st.sidebar.info(
+    """
+    Web App URL: <https://povtrait.streamlit.app/>
+    GitHub repository: <https://github.com/fitriandriastuti/povtrait>
+    """
+)
+
+st.sidebar.title("Contact")
+st.sidebar.info(
+    """
+    Abd. Hadi Asfarangga: 
+    [GitHub](https://github.com/hadi-asfarangga) | | [LinkedIn](https://www.linkedin.com/in/abdul-hadi-asfarangga-76b698130/)
+    
+    Baiq Nurul Haqiqi:
+    [GitHub](https://github.com/bnhaqiqi) | [Twitter](https://twitter.com/fitriandriast) | [LinkedIn](https://www.linkedin.com/in/baiq-nurul-haqiqi/)
+    
+    Ferdian Fadly: <http://ferdifadly.blogspot.com/>
+    [GitHub](https://github.com/ferdi-fadly) | [Twitter](https://twitter.com/ferdianfadly) | [LinkedIn](https://www.linkedin.com/in/ferdian-fadly-81826466/)
+    
+    Fitri Andri Astuti: <https://fitrengineer.com>
+    [GitHub](https://github.com/fitriandriastuti) | [Twitter](https://twitter.com/fitriandriast) | [YouTube](https://www.youtube.com/channel/UC1CC_1KKL32tTAFsNNBBlag) | [LinkedIn](https://www.linkedin.com/in/fitriandriastuti)
+    
+    Muhammad Syahrul: 
+    [GitHub](https://github.com/muhammad92syahrul) | [Twitter](https://twitter.com/pegawaiumbi) | [YouTube](https://www.youtube.com/channel/UCON57Bvk-qsED80SI8jlqkw) | [LinkedIn](https://www.linkedin.com/in/muhammad-syahrul-aa8892218/)
+    
+    """
+)
+
 st.markdown("""
 <style>
 div[data-testid="metric-container"] {
@@ -47,7 +76,6 @@ st.image(image, width=600)
 
 st.title('Poverty Potrait Dashboard')
 today = datetime.datetime.now()
-
 
 price_data = pd.read_excel("data/Gas and Food Price.xlsx")
 #df.rename(columns={'Date(Monthly)': 'Date'}, inplace=True)
