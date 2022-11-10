@@ -2,7 +2,7 @@
 
 A streamlit multipage app for interactive dashboard to visualize and analyze the results of poverty measurement and poverty modelling. [Streamlit Cloud](https://streamlit.io/cloud), [Heroku](https://heroku.com/), or [MyBinder](https://mybinder.org/).
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/giswqs/streamlit-geospatial/master?urlpath=proxy/8501/)
+[comment]: <> ([![Binder]&#40;https://mybinder.org/badge_logo.svg&#41;]&#40;https://mybinder.org/v2/gh/giswqs/streamlit-geospatial/master?urlpath=proxy/8501/&#41;)
 
 - Web app: <https://povtrait.streamlitapp.com>
 - Source code: <https://github.com/fitriandriastuti/povtrait>
