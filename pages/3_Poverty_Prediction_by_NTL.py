@@ -42,6 +42,8 @@ st.title('Poverty Potrait with NTL')
 df = pd.read_excel("data/NTL and Poverty.xlsx")
 df['Year'] = df['Year'].astype(str)
 
+df_quarter = pd.read_excel("data/prediction all countries quarterly.xlsx")
+
 # Create multiple tabs
 vis_tab, pred_single_tab, pred_batch_tab  = st.tabs(["Visualisation", "Single Poverty Prediction", "Batch Poverty Prediction"])
 
@@ -72,6 +74,30 @@ with vis_tab:
             ).interactive(),
             use_container_width=True, )
 
+    st.markdown('#### Poverty Quarterly Prediction by Country')
+
+    col_viz = st.columns(3)
+    with col_viz[0]:
+        country_option = st.multiselect("Select Country",sorted(df_country["country name"].unique()), ['Albania'], key="Country Vis")
+
+    country_codes = []
+
+    for country in country_option:
+        country_code = df_country.loc[df_country["country name"] == country, 'country code'].to_list()[0]
+        country_codes.append(country_code)
+
+    selected_data = df_quarter[df_quarter["country_code_2"].isin(country_codes)]
+
+    st.altair_chart(
+            alt.Chart(selected_data).mark_line(color='MediumAquaMarine').encode(
+                x='Year-Quarter',
+                y='Poverty',
+                color=alt.Color('country_code_2', title='Country Code'),
+                # y=alt.Y('Value', scale=alt.Scale(domain=[350, 550])),
+                tooltip=['Year-Quarter', alt.Tooltip('Poverty', format=",.2f")],
+            ).interactive()
+            , use_container_width=True, )
+
 ###### Tab 2: Single Prediction ######
 with pred_single_tab:
     st.subheader("Predicting Poverty with NTL")
@@ -79,7 +105,7 @@ with pred_single_tab:
 
     # Sliders for the variables
     with col2[0]:
-        country_option = st.selectbox("Select Country",df_country["country name"].unique())
+        country_option = st.selectbox("Select Country",sorted(df_country["country name"].unique()))
         ntl = st.slider(
             'NTL',
             0.0, 1.0, 0.5)
@@ -91,11 +117,10 @@ with pred_single_tab:
                 }
     features_df = pd.DataFrame([features])
 
-    if st.button('Predict', key="Button Predict Single"):
-        prediction = predict_poverty(features_df, country_option)
-        # Display the prediction
-        st.markdown('#### Predicted Poverty: ' + str(round(prediction[0], 2)))
-        #st.markdown('#### Predicted Poverty: ' + str(30))
+    prediction = predict_poverty(features_df, country_option)
+    # Display the prediction
+    st.markdown('#### Predicted Poverty: ' + str(round(prediction[0], 2)))
+    #st.markdown('#### Predicted Poverty: ' + str(30))
 
 
 ###### Tab 3: Batch Prediction ######
@@ -137,7 +162,7 @@ with pred_batch_tab:
     col3 = st.columns(3)
 
     with col3[0]:
-        country_option_batch = st.selectbox("Select Country", df_country["country name"].unique(), key="Country Option Batch")
+        country_option_batch = st.selectbox("Select Country", sorted(df_country["country name"].unique()), key="Country Option Batch")
 
     # Predict poverty based on the input dataframe
     if st.button('Predict', key="Button Predict Batch"):

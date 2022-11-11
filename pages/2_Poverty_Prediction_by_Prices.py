@@ -13,7 +13,7 @@ icon = Image.open("./resources/favicon.ico")
 
 ## Set page title and layout
 st.set_page_config(
-    page_title="Poverty Prediction by NTL - Povtrait",
+    page_title="Poverty Prediction by Prices - Povtrait",
     page_icon=icon,
     layout='wide',
     initial_sidebar_state='collapsed'
@@ -29,17 +29,18 @@ st.title('Poverty Potrait with Prices Data')
 
 # Load the data
 df = pd.read_excel("data/Gas and Food Price.xlsx")
-df_country = pd.read_excel("data/country models and score.xlsx")
+df_country = pd.read_csv("data/master_negara_model2_iso2.csv")
+df_template = pd.read_excel("data/template_model2.xlsx")
 
 def predict_poverty(data, country_option):
     # Load the model
-    model_path = df_country.loc[df_country["country name"]==country_option,'model name'].to_list()[0]
-    with open('models/'+model_path, 'rb') as f:
+    country_code = df_country.loc[df_country["nama_negara_model2"]==country_option,'iso2'].to_list()[0]
+    with open('models/model price/'+country_code+'_task2.pkl', 'rb') as f:
         model = pickle.load(f)
     result = model.predict(data)
     return result
 
-energy_tab, food_tab, fertilizer_tab, pred_single_tab, pred_batch_tab  = st.tabs(["Energy Price Statistics", "Food Price Statistics", "Fertilizer Price Statistics", "Single Poverty Prediction", "Batch Poverty Prediction"])
+energy_tab, food_tab, fertilizer_tab, feature_importance, pred_single_tab, pred_batch_tab  = st.tabs(["Energy Price Statistics", "Food Price Statistics", "Fertilizer Price Statistics", "Poverty Prediction Feature Importance", "Single Poverty Prediction", "Batch Poverty Prediction"])
 
 with energy_tab:
     st.markdown("### Energy Prices")
@@ -63,23 +64,18 @@ with food_tab:
     st.altair_chart(aly.dist(beverages_df,mark='line'), use_container_width=True,)
     st.altair_chart(aly.corr(beverages_df ))
 
-    st.markdown("##### Fats and Oil")
+    st.markdown("##### Oils and Meals")
     fats_oil_df = df.iloc[:,20:31]
     st.altair_chart(aly.dist(fats_oil_df,mark='line'), use_container_width=True,)
     st.altair_chart(aly.corr(fats_oil_df))
 
-    st.markdown("##### Crops and Fruits")
-    crops_fruits_df = df.iloc[:,31:43]
+    st.markdown("##### Grains")
+    crops_fruits_df = df.loc[:,["Barley", "Maize", "Sorghum", "Rice, Thai 5% ", "Rice, Thai 25% ", "Rice, Viet Namese 5%", "Wheat, US SRW **", "Wheat, US HRW"]]
     st.altair_chart(aly.dist(crops_fruits_df,mark='line'), use_container_width=True,)
     st.altair_chart(aly.corr(crops_fruits_df))
 
-    st.markdown("##### Animal Products")
-    animal_df = df.iloc[:,43:46]
-    st.altair_chart(aly.dist(animal_df,mark='line'), use_container_width=True,)
-    st.altair_chart(aly.corr(animal_df))
-
-    st.markdown("##### Others")
-    others_df = df.iloc[:,46:]
+    st.markdown("##### Other Foods")
+    others_df = df.iloc[:,40:-5]
     st.altair_chart(aly.dist(others_df,mark='line'), use_container_width=True,)
     st.altair_chart(aly.corr(others_df))
 
@@ -95,70 +91,75 @@ with fertilizer_tab:
     st.altair_chart(aly.corr(fertilizer_df))
 
 
+with feature_importance:
+    st.subheader("Poverty Prediction Feature Importance")
+    col_fi = st.columns(3)
+    with col_fi[0]:
+        country_option = st.selectbox("Select Country", sorted(df_country["nama_negara_model2"].unique()), key = "Feature Importance")
+
+    country_code = df_country.loc[df_country["nama_negara_model2"] == country_option, 'iso2'].to_list()[0]
+    image = Image.open('resources/feature importance/'+country_code+'.png')
+    st.image(image)
+
 ###### Tab 4: Single Prediction ######
 with pred_single_tab:
     st.subheader("Predicting Poverty with Prices")
     col2 = st.columns(3)
 
-    country_option = st.selectbox("Select Country", df_country["country name"].unique())
+    country_option = st.selectbox("Select Country", sorted(df_country["nama_negara_model2"].unique()))
     # Sliders for the variables
     with col2[0]:
-        real_gdp = st.slider(
-            'Real GDP',
+        gdp = st.slider(
+            'Gross Domestic Product',
             0.0, 1.0, 0.5)
         beverages = st.slider(
-            'Beverages Price',
+            'Beverages',
             0.0, 1.0, 0.5)
 
         grains = st.slider(
-            'Grains Price',
+            'Grains',
             0.0, 1.0, 0.5)
 
     with col2[1]:
-        real_gfce = st.slider(
-            'Real GFCE',
-            0.0, 1.0, 0.5)
-        food = st.slider(
-            'Food Price',
+        ge = st.slider(
+            'Government Final Consumption Expenditure',
             0.0, 1.0, 0.5)
 
         other_food = st.slider(
-            'Other Food Price',
+            'Other Food',
             0.0, 1.0, 0.5)
 
 
     with col2[2]:
         energy = st.slider(
-            'Energy Price',
+            'Energy',
             0.0, 1.0, 0.5)
 
         oils_meals = st.slider(
-            'Oils & Meals Price',
+            'Oils & Meals',
             0.0, 1.0, 0.5)
 
         fertilizer = st.slider(
-            'Fertilizer Price',
+            'Fertilizers',
             0.0, 1.0, 0.5)
 
     # Create dataframe for the features
     features = {
-                'Real GDP': real_gdp,
-                'Real GFCE': real_gfce,
-                'Energy Price': energy,
-                'Beverages Price': beverages,
-                'Food Price': food,
-                'Oils & Meals Price': oils_meals,
-                'Grains Price': grains,
-                'Other Food Price': other_food,
-                'Fertilizer Price': fertilizer,
+                'gdp': gdp,
+                'ge': ge,
+                'Energy': energy,
+                'Beverages': beverages,
+                'Oils & Meals': oils_meals,
+                'Grains': grains,
+                'Other Food': other_food,
+                'Fertilizers': fertilizer,
                 }
     features_df = pd.DataFrame([features])
 
-    if st.button('Predict', key="Button Predict Single"):
-        prediction = predict_poverty(features_df, country_option)
-        # Display the prediction
-        st.markdown('#### Predicted Poverty: ' + str(round(prediction[0], 2)))
-        #st.markdown('#### Predicted Poverty: ' + str(30))
+    prediction = predict_poverty(features_df, country_option)
+    # Display the prediction
+    st.markdown('#### Predicted Poverty: ' + str(round(prediction[0], 2)))
+    #st.markdown('#### Predicted Poverty: ' + str(30))
 
 
 ###### Tab 5: Batch Prediction ######
@@ -182,7 +183,7 @@ with pred_batch_tab:
 
     st.write("Please make sure the uploaded file follows the right template.")
     # Create the template file
-    template_file = to_excel(df.iloc[:,-1:])
+    template_file = to_excel(df_template)
 
     # Button to download the template file
     st.download_button(
@@ -200,7 +201,7 @@ with pred_batch_tab:
     col3 = st.columns(3)
 
     with col3[0]:
-        country_option_batch = st.selectbox("Select Country", df_country["country name"].unique(), key="Country Option Batch")
+        country_option_batch = st.selectbox("Select Country", sorted(df_country["nama_negara_model2"].unique()), key="Country Option Batch")
 
     # Predict poverty based on the input dataframe
     if st.button('Predict', key="Button Predict Batch"):
