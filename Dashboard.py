@@ -25,7 +25,8 @@ st.sidebar.title("About")
 st.sidebar.info(
     """
     Web App URL: <https://povtrait.streamlit.app/>
-    GitHub repository: <https://github.com/fitriandriastuti/povtrait>
+    
+    GitHub Repository: <https://github.com/fitriandriastuti/povtrait>
     """
 )
 
@@ -74,7 +75,16 @@ div[data-testid="stMetricValue"] > div {
 image = Image.open('resources/logo-povtrait.png')
 st.image(image, width=600)
 
-st.title('Poverty Potrait Dashboard')
+st.title("TRACKING AND MODELING QUARTERLY POVERTY")
+st.markdown(
+    """
+    Interactive web app to tracking and modeling quarterly poverty with analysis of Nighttime Light satellite imagery data.
+    
+    
+    
+    """
+)
+
 today = datetime.datetime.now()
 
 price_data = pd.read_excel("data/Gas and Food Price.xlsx")
