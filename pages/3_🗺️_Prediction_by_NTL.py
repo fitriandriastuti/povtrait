@@ -37,10 +37,10 @@ st.sidebar.info(
     Baiq Nurul Haqiqi:
     [GitHub](https://github.com/bnhaqiqi) | [Twitter](https://twitter.com/fitriandriast) | [LinkedIn](https://www.linkedin.com/in/baiq-nurul-haqiqi/)
 
-    Ferdian Fadly: <ferdifadly.blogspot.com/>
+    Ferdian Fadly:
     [GitHub](https://github.com/ferdi-fadly) | [Twitter](https://twitter.com/ferdianfadly) | [LinkedIn](https://www.linkedin.com/in/ferdian-fadly-81826466/)
 
-    Fitri Andri Astuti: <fitrengineer.com>
+    Fitri Andri Astuti:
     [GitHub](https://github.com/fitriandriastuti) | [Twitter](https://twitter.com/fitriandriast) | [YouTube](https://www.youtube.com/channel/UC1CC_1KKL32tTAFsNNBBlag) | [LinkedIn](https://www.linkedin.com/in/fitriandriastuti)
 
     Muhammad Syahrul: 

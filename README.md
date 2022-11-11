@@ -1,10 +1,10 @@
 # POVTRAIT - Poverty Portrait Dashboard
 
-A streamlit multipage app for interactive dashboard to visualize and analyze the results of poverty measurement and poverty modelling. [Streamlit Cloud](https://streamlit.io/cloud), [Heroku](https://heroku.com/), or [MyBinder](https://mybinder.org/).
+A streamlit multipage app for interactive dashboard to visualize and analyze the results of poverty measurement and poverty modelling. .
 
 [comment]: <> ([![Binder]&#40;https://mybinder.org/badge_logo.svg&#41;]&#40;https://mybinder.org/v2/gh/giswqs/streamlit-geospatial/master?urlpath=proxy/8501/&#41;)
 
-- Web app: <https://povtrait.streamlitapp.com>
+- Web app: <https://povtrait.streamlit.app/>
 - Source code: <https://github.com/fitriandriastuti/povtrait>
 
 ## Installation
@@ -17,6 +17,10 @@ git clone https://github.com/fitriandriastuti/povtrait
 cd povtrait
 pip install -r requirements.txt
 streamlit run Dashboard.py
+````
+#### To run models access:
+````bash
+cd notebooks/Modelling with NTL data.ipynb
 ````
 
 [comment]: <> (#### To install Backend GEOCS with Docker locally:)

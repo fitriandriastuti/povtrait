@@ -19,6 +19,35 @@ st.set_page_config(
     initial_sidebar_state='collapsed'
 )
 
+st.sidebar.title("About")
+st.sidebar.info(
+    """
+    Web App URL: <https://povtrait.streamlit.app/>
+
+    GitHub Repository: <https://github.com/fitriandriastuti/povtrait>
+    """
+)
+
+st.sidebar.title("Contact")
+st.sidebar.info(
+    """
+    Abd. Hadi Asfarangga: 
+    [GitHub](https://github.com/hadi-asfarangga) | | [LinkedIn](https://www.linkedin.com/in/abdul-hadi-asfarangga-76b698130/)
+
+    Baiq Nurul Haqiqi:
+    [GitHub](https://github.com/bnhaqiqi) | [Twitter](https://twitter.com/fitriandriast) | [LinkedIn](https://www.linkedin.com/in/baiq-nurul-haqiqi/)
+
+    Ferdian Fadly:
+    [GitHub](https://github.com/ferdi-fadly) | [Twitter](https://twitter.com/ferdianfadly) | [LinkedIn](https://www.linkedin.com/in/ferdian-fadly-81826466/)
+
+    Fitri Andri Astuti:
+    [GitHub](https://github.com/fitriandriastuti) | [Twitter](https://twitter.com/fitriandriast) | [YouTube](https://www.youtube.com/channel/UC1CC_1KKL32tTAFsNNBBlag) | [LinkedIn](https://www.linkedin.com/in/fitriandriastuti)
+
+    Muhammad Syahrul: 
+    [GitHub](https://github.com/muhammad92syahrul) | [Twitter](https://twitter.com/pegawaiumbi) | [YouTube](https://www.youtube.com/channel/UCON57Bvk-qsED80SI8jlqkw) | [LinkedIn](https://www.linkedin.com/in/muhammad-syahrul-aa8892218/)
+
+    """
+)
 
 # Display team's logo
 image = Image.open('resources/logo-povtrait small.png')
