@@ -50,11 +50,13 @@ st.sidebar.info(
 )
 
 ## Functions to predict the result based on the trained model
+df_country = pd.read_excel("data/country models and score.xlsx")
 
 # Poverty Prediction by NTL
-def predict_poverty(data):
+def predict_poverty(data, country_option):
     # Load the model
-    with open('models/model_pov_ntl.pkl', 'rb') as f:
+    model_path = df_country.loc[df_country["country name"]==country_option,'model name'].to_list()[0]
+    with open('models/'+model_path, 'rb') as f:
         model = pickle.load(f)
     result = model.predict(data)
     return result
@@ -70,9 +72,8 @@ st.title('Poverty Potrait with NTL')
 df = pd.read_excel("data/NTL and Poverty.xlsx")
 df['Year'] = df['Year'].astype(str)
 
-
 # Create multiple tabs
-vis_tab, pred_single_tab, pred_batch_tab,  = st.tabs(["Visualisation", "Single Prediction", "Batch Prediction"])
+vis_tab, pred_single_tab, pred_batch_tab  = st.tabs(["Visualisation", "Single Poverty Prediction", "Batch Poverty Prediction"])
 
 ###### Tab 1: Visualisation ######
 with vis_tab:
@@ -101,13 +102,14 @@ with vis_tab:
             ).interactive(),
             use_container_width=True, )
 
-###### Tab 2: Single Prediction with All Variables ######
+###### Tab 2: Single Prediction ######
 with pred_single_tab:
     st.subheader("Predicting Poverty with NTL")
     col2 = st.columns(2)
 
     # Sliders for the variables
     with col2[0]:
+        country_option = st.selectbox("Select Country",df_country["country name"].unique())
         ntl = st.slider(
             'NTL',
             0.0, 1.0, 0.5)
@@ -119,12 +121,11 @@ with pred_single_tab:
                 }
     features_df = pd.DataFrame([features])
 
-
-    prediction = predict_poverty(features_df)
-
-    # Display the prediction
-    st.markdown('#### Predicted Poverty: ' + str(round(prediction[0], 2)))
-    #st.markdown('#### Predicted Poverty: ' + str(30))
+    if st.button('Predict', key="Button Predict Single"):
+        prediction = predict_poverty(features_df, country_option)
+        # Display the prediction
+        st.markdown('#### Predicted Poverty: ' + str(round(prediction[0], 2)))
+        #st.markdown('#### Predicted Poverty: ' + str(30))
 
 
 ###### Tab 3: Batch Prediction ######
@@ -144,9 +145,9 @@ with pred_batch_tab:
         return processed_data
 
     # Upload the excel file
-    st.markdown('#### Upload the Predicted Variables')
+    st.markdown('#### Upload the NTL data')
 
-    st.write("Please make sure the uploaded file follows the right template for poverty predictors.")
+    st.write("Please make sure the uploaded file follows the right template.")
     # Create the template file
     template_file = to_excel(df.iloc[:,-1:])
 
@@ -163,10 +164,15 @@ with pred_batch_tab:
         df_input = pd.read_excel(uploaded_file)
         st.dataframe(df_input)
 
-    # Predict the NAC based on the input dataframe
-    if st.button('Predict'):
+    col3 = st.columns(3)
+
+    with col3[0]:
+        country_option_batch = st.selectbox("Select Country", df_country["country name"].unique(), key="Country Option Batch")
+
+    # Predict poverty based on the input dataframe
+    if st.button('Predict', key="Button Predict Batch"):
         st.markdown('#### Predicted Poverty')
-        prediction_batch = predict_poverty(df_input)
+        prediction_batch = predict_poverty(df_input,country_option_batch)
 
         # Add prediction as a new column
         df_predicted = df_input.assign(Poverty=prediction_batch)
