@@ -40,7 +40,7 @@ def predict_poverty(data, country_option):
     result = model.predict(data)
     return result
 
-energy_tab, food_tab, fertilizer_tab, feature_importance, pred_single_tab, pred_batch_tab  = st.tabs(["Energy Price Statistics", "Food Price Statistics", "Fertilizer Price Statistics", "Poverty Prediction Feature Importance", "Single Poverty Prediction", "Batch Poverty Prediction"])
+energy_tab, food_tab, fertilizer_tab, feature_importance, pred_single_tab, pred_batch_tab  = st.tabs(["Energy Price Statistics", "Food Price Statistics", "Fertilizer Price Statistics", "Feature Importance", "Single Poverty Prediction", "Batch Poverty Prediction"])
 
 with energy_tab:
     st.markdown("### Energy Prices")
@@ -93,8 +93,11 @@ with fertilizer_tab:
 
 with feature_importance:
     st.subheader("Poverty Prediction Feature Importance")
-    col_fi = st.columns(3)
+    col_fi = st.columns(2)
+
     with col_fi[0]:
+        image = Image.open('resources/feature table.jpeg')
+        st.image(image)
         country_option = st.selectbox("Select Country", sorted(df_country["nama_negara_model2"].unique()), key = "Feature Importance")
 
     country_code = df_country.loc[df_country["nama_negara_model2"] == country_option, 'iso2'].to_list()[0]

@@ -111,8 +111,8 @@ with metric_col[2]:
 
 #
 
-## Poverty Map ##
-st.subheader("Poverty Map")
+## Map of Poverty Headcount Ratio at $3.65 a Day ##
+st.subheader(" Map")
 col1 = st.columns(2)
 with col1[0]:
     years = [str(year) for year in range(2012, 2023)]
@@ -155,8 +155,8 @@ def show_maps(data, threshold_scale):
         reset=True).add_to(world_map)
 
     folium.LayerControl().add_to(world_map)
-    maps.geojson.add_child(folium.features.GeoJsonTooltip(fields=['ADMIN'],
-                                                        aliases=['ADMIN'],
+    maps.geojson.add_child(folium.features.GeoJsonTooltip(fields=['ADMIN','Poverty'],
+                                                        aliases=['Country', 'Poverty'],
                                                         labels=True))
     folium_static(world_map)
 
@@ -166,8 +166,12 @@ centers = center()
 world_map = folium.Map(tiles="OpenStreetMap", location=[centers[0], centers[1]], zoom_start=3)
 
 
-#for idx in range(len(data_geo['features'])):
-#    country_code = data_geo['features'][idx]['properties']['ISO_A3']
-#    data_geo['features'][idx]['properties']['Food Insecurity'][year] = data_food_insecurity.loc[data_food_insecurity['Country Code']==country_code,str(year)].tolist()[0]
+for idx in range(len(data_geo['features'])):
+    country_code = data_geo['features'][idx]['properties']['ISO_A3']
+    dat = data_poverty_map.loc[data_poverty_map['country_iso3']==country_code,'Poverty'].to_list()
+    if dat:
+        data_geo['features'][idx]['properties']['Poverty'] = dat[0]
+    else:
+        data_geo['features'][idx]['properties']['Poverty'] = 0
 
 show_maps(year, threshold(year))
