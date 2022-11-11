@@ -91,6 +91,7 @@ price_data = pd.read_excel("data/Gas and Food Price.xlsx")
 data_geo = json.load(open('data/countries.geojson'))
 data_food_insecurity = pd.read_excel('data/food insecurity.xlsx')
 data_poverty = pd.read_excel('data/data kemiskinan.xlsx')
+data_poverty_map = pd.read_excel("data/complile_poverty_ntl_viirs_all_country.xlsx", sheet_name="prediction_allcountries")
 data_ntl_viirs = pd.read_excel('data/complile_ntl_viirs_all_country.xlsx',sheet_name='yearly')
 data_price = pd.read_excel('data/All Prices Data.xlsx', sheet_name='Monthly Indices')
 
@@ -114,8 +115,12 @@ with metric_col[2]:
 st.subheader("Poverty Map")
 col1 = st.columns(2)
 with col1[0]:
-    year = st.selectbox("Select Year", ('2020','2019','2018','2017'))
-
+    years = [str(year) for year in range(2012, 2023)]
+    year = st.selectbox("Select Year", years)
+    quarterly = [str(year) for year in range(1, 5)]
+    option_quarter = st.selectbox("Select Quarter", (quarterly))
+    data_poverty_map = data_poverty_map[data_poverty_map["year"]==int(year)]
+    data_poverty_map = data_poverty_map[data_poverty_map["quarter"]==int(option_quarter)]
 
 
 def center():
@@ -127,24 +132,25 @@ def center():
     return latitude, longitude
 
 def threshold(data):
-    threshold_scale = np.linspace(data_food_insecurity[year].min(),
-                              data_food_insecurity[year].max(),
+    threshold_scale = np.linspace(data_poverty_map['Poverty'].min(),
+                              data_poverty_map['Poverty'].max(),
                               10, dtype=float)
     threshold_scale = threshold_scale.tolist() # change the numpy array to a list
     threshold_scale[-1] = threshold_scale[-1]
     return threshold_scale
 
+
 def show_maps(data, threshold_scale):
     maps= folium.Choropleth(
         geo_data = data_geo,
-        data = data_food_insecurity,
-        columns=['Country Code',year],
+        data = data_poverty_map,
+        columns=['country_iso3','Poverty'],
         key_on='feature.properties.ISO_A3',
         threshold_scale=threshold_scale,
         fill_color='YlOrRd',
         fill_opacity=0.7,
         line_opacity=0.2,
-        legend_name="Food Insecurity",
+        legend_name="Poverty Levels",
         highlight=True,
         reset=True).add_to(world_map)
 

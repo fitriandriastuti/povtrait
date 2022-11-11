@@ -13,7 +13,7 @@ icon = Image.open("./resources/favicon.ico")
 
 ## Set page title and layout
 st.set_page_config(
-    page_title="Poverty Prediction by Prices - Povtrait",
+    page_title="Poverty Prediction with Macroeconomic Indicators - Povtrait",
     page_icon=icon,
     layout='wide',
     initial_sidebar_state='collapsed'
@@ -25,7 +25,7 @@ image = Image.open('resources/logo-povtrait small.png')
 st.image(image)
 
 # Set title
-st.title('Poverty Potrait with Prices Data')
+st.title('Poverty Potrait with Macroeconomic Indicators')
 
 # Load the data
 df = pd.read_excel("data/Gas and Food Price.xlsx")
@@ -103,50 +103,56 @@ with feature_importance:
 
 ###### Tab 4: Single Prediction ######
 with pred_single_tab:
-    st.subheader("Predicting Poverty with Prices")
+    st.subheader("Predicting Poverty with Macroeconomic Indicators")
     col2 = st.columns(3)
 
     country_option = st.selectbox("Select Country", sorted(df_country["nama_negara_model2"].unique()))
     # Sliders for the variables
     with col2[0]:
-        gdp = st.slider(
-            'Gross Domestic Product',
-            0.0, 1.0, 0.5)
+
+        #gdp = st.slider(
+        #    'Gross Domestic Product',
+        #    0, 50000000000, 20000000)
+
+        gdp = st.text_input('Gross Domestic Product', 20000000)
+
         beverages = st.slider(
             'Beverages',
-            0.0, 1.0, 0.5)
+            0.0, 500.0, 50.0)
 
         grains = st.slider(
             'Grains',
-            0.0, 1.0, 0.5)
+            0.0, 500.0, 50.0)
 
     with col2[1]:
-        ge = st.slider(
-            'Government Final Consumption Expenditure',
-            0.0, 1.0, 0.5)
+        #ge = st.slider(
+        #    'Government Final Consumption Expenditure',
+        #    0, 50000000000, 20000000)
+
+        ge = st.text_input('Government Final Consumption Expenditure', 20000000)
 
         other_food = st.slider(
             'Other Food',
-            0.0, 1.0, 0.5)
+            0.0, 500.0, 50.0)
 
 
     with col2[2]:
         energy = st.slider(
             'Energy',
-            0.0, 1.0, 0.5)
+            0.0, 500.0, 50.0)
 
         oils_meals = st.slider(
             'Oils & Meals',
-            0.0, 1.0, 0.5)
+            0.0, 500.0, 50.0)
 
         fertilizer = st.slider(
             'Fertilizers',
-            0.0, 1.0, 0.5)
+            0.0, 500.0, 50.0)
 
     # Create dataframe for the features
     features = {
-                'gdp': gdp,
-                'ge': ge,
+                'gdp': float(gdp),
+                'ge': float(ge),
                 'Energy': energy,
                 'Beverages': beverages,
                 'Oils & Meals': oils_meals,
@@ -179,7 +185,7 @@ with pred_batch_tab:
         return processed_data
 
     # Upload the excel file
-    st.markdown('#### Upload the prices data')
+    st.markdown('#### Upload the macroeconomic indicators data')
 
     st.write("Please make sure the uploaded file follows the right template.")
     # Create the template file
@@ -221,20 +227,10 @@ with pred_batch_tab:
         st.download_button(
             label='📥 Download data as Excel',
             data=excel_file,
-            file_name='predicted Poverty by prices.xlsx',
+            file_name='predicted poverty by macroeconomic indicators.xlsx',
         )
 
-# Scatter plot between predictor and target
-#st.markdown("#### Relationship between prices and poverty")
-#col_vis = st.columns(3)
-#with col_vis[0]:
-#    column_name = st.selectbox("Select predictor variable", df.columns)
 
-#st.altair_chart(alt.Chart(df).mark_circle(size=60).encode(
-#        x='RR CO2',
-#        y=column_name,
-#        tooltip=['RR CO2', column_name]
-#    ).interactive(), use_container_width=True,)
 
 
 
