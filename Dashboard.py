@@ -163,7 +163,7 @@ def show_maps(data, threshold_scale):
 centers = center()
 
 
-world_map = folium.Map(tiles="OpenStreetMap", location=[centers[0], centers[1]], zoom_start=3)
+world_map = folium.Map(tiles="OpenStreetMap", location=[centers[0], centers[1]], zoom_start=1)
 
 
 for idx in range(len(data_geo['features'])):
