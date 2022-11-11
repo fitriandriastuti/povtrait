@@ -112,7 +112,7 @@ with metric_col[2]:
 #
 
 ## Map of Poverty Headcount Ratio at $3.65 a Day ##
-st.subheader(" Map")
+st.subheader("Map of Poverty Headcount Ratio at $3.65 a Day")
 col1 = st.columns(2)
 with col1[0]:
     years = [str(year) for year in range(2012, 2023)]
