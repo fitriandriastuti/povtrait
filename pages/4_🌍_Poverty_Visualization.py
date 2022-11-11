@@ -8,6 +8,11 @@ from pyxlsb import open_workbook as open_xlsb
 import altair_ally as aly
 import altair as alt
 
+import datetime
+import ee
+import streamlit as st
+import geemap.foliumap as geemap
+
 ## Set page icon
 icon = Image.open("./resources/favicon.ico")
 
@@ -53,41 +58,47 @@ st.sidebar.info(
 st.title('Poverty Visualization')
 
 # Load the data
-df = pd.read_excel("data/NTL and Poverty.xlsx")
-df['Year'] = df['Year'].astype(str)
-
+df = pd.read_excel("data/complile_poverty_ntl_viirs_all_country.xlsx", sheet_name="prediction_allcountries")
+print(df)
+df['year'] = df['year'].astype(str)
 
 # Create multiple tabs
 vis_tab, pred_single_tab  = st.tabs(["Map Visualization", "Single Prediction"])
 
 ###### Tab 1: Visualisation ######
 with vis_tab:
-    st.subheader("Visualization")
-    col1 = st.columns(2)
+    col1, col2 = st.columns([4, 1])
+    countries_geojson = 'data/countries.geojson'
 
-    with col1[0]:
-        option = st.selectbox("Select Data", ("NTL", "Poverty"))
+    Map = geemap.Map()
+    Map.add_basemap("HYBRID")
 
-    st.markdown('#### Poverty and NTL Over the Year')
-    st.altair_chart(
-            alt.Chart(df).mark_line(color='orange').encode(
-                x='Year',
-                y=option,
-                # y=alt.Y('Value', scale=alt.Scale(domain=[350, 550])),
-                tooltip=['Year', alt.Tooltip(option, format=",.2f")],
-            ).interactive()
-            , use_container_width=True, )
+    # markdown = """
+    #     - [Dynamic World Land Cover](https://developers.google.com/earth-engine/datasets/catalog/GOOGLE_DYNAMICWORLD_V1?hl=en)
+    #     - [ESA Global Land Cover](https://developers.google.com/earth-engine/datasets/catalog/ESA_WorldCover_v100)
+    #     - [ESRI Global Land Cover](https://samapriya.github.io/awesome-gee-community-datasets/projects/esrilc2020)
+    #
+    # """
 
-    st.markdown('#### Scatter Plot')
-    st.altair_chart(
-            alt.Chart(df).mark_circle(size=90,color='steelblue').encode(
-                x='NTL',
-                y='Poverty',
-                tooltip=['Year', 'NTL', 'Poverty']
-            ).interactive(),
-            use_container_width=True, )
+    with col2:
 
+        longitude, latitude, zoom = 117.153709, -0.502106, 5
+        Map.setCenter(longitude, latitude, zoom)
 
+        years = [str(year) for year in range(2012, 2023)]
+        option_years = st.selectbox("Select Year", (years))
+
+        quarterly = [str(year) for year in range(1, 5)]
+        option_quarter = st.selectbox("Select Quarter", (quarterly))
+
+        Map.add_geojson(countries_geojson, layer_name="Boundary All Country")
+        Map.add_data(df, column="country", cmap='Blues', layer_name="Poverty Prediction")
+
+        # with st.expander("Data sources"):
+        #     st.markdown(markdown)
+
+    with col1:
+        Map.to_streamlit(height=750)
 
 
 ###### Tab 2: Single Prediction with All Variables ######
@@ -114,4 +125,10 @@ with pred_single_tab:
     # # Display the prediction
     # st.markdown('#### Predicted Poverty: ' + str(round(prediction[0], 2)))
     # #st.markdown('#### Predicted Poverty: ' + str(30))
+
+
+
+
+
+
 
