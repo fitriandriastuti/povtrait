@@ -58,74 +58,133 @@ st.sidebar.info(
 st.title('Poverty Visualization')
 
 # Load the data
-df = pd.read_excel("data/complile_poverty_ntl_viirs_all_country.xlsx", sheet_name="prediction_allcountries")
-print(df)
-df['year'] = df['year'].astype(str)
+import json
+from geopy.geocoders import Nominatim
+import folium
+from streamlit_folium import folium_static
 
-# Create multiple tabs
-vis_tab, pred_single_tab  = st.tabs(["Map Visualization", "Single Prediction"])
+data_poverty = pd.read_excel("data/complile_poverty_ntl_viirs_all_country.xlsx", sheet_name="prediction_allcountries")
+data_geo = json.load(open('data/countries.geojson'))
+years = [str(year) for year in range(2012, 2023)]
+year = st.selectbox("Select Year", years)
+quarterly = [str(year) for year in range(1, 5)]
+option_quarter = st.selectbox("Select Quarter", (quarterly))
 
-###### Tab 1: Visualisation ######
-with vis_tab:
-    col1, col2 = st.columns([4, 1])
-    countries_geojson = 'data/countries.geojson'
+def center():
+    address = 'Indonesia'
+    geolocator = Nominatim(user_agent="id_explorer")
+    location = geolocator.geocode(address)
+    latitude = location.latitude
+    longitude = location.longitude
+    return latitude, longitude
 
-    Map = geemap.Map()
-    Map.add_basemap("HYBRID")
+def threshold(data):
+    threshold_scale = np.linspace(data_poverty[year].min(),
+                              data_poverty[year].max(),
+                              10, dtype=float)
+    threshold_scale = threshold_scale.tolist() # change the numpy array to a list
+    threshold_scale[-1] = threshold_scale[-1]
+    return threshold_scale
 
-    # markdown = """
-    #     - [Dynamic World Land Cover](https://developers.google.com/earth-engine/datasets/catalog/GOOGLE_DYNAMICWORLD_V1?hl=en)
-    #     - [ESA Global Land Cover](https://developers.google.com/earth-engine/datasets/catalog/ESA_WorldCover_v100)
-    #     - [ESRI Global Land Cover](https://samapriya.github.io/awesome-gee-community-datasets/projects/esrilc2020)
-    #
-    # """
+def show_maps(data, threshold_scale):
+    maps= folium.Choropleth(
+        geo_data = data_geo,
+        data = data_poverty,
+        columns=['Country Code',year],
+        key_on='feature.properties.ISO_A3',
+        threshold_scale=threshold_scale,
+        fill_color='YlOrRd',
+        fill_opacity=0.7,
+        line_opacity=0.2,
+        legend_name="Poverty Levels",
+        highlight=True,
+        reset=True).add_to(world_map)
 
-    with col2:
+    folium.LayerControl().add_to(world_map)
+    maps.geojson.add_child(folium.features.GeoJsonTooltip(fields=['ADMIN'],
+                                                        aliases=['ADMIN'],
+                                                        labels=True))
+    folium_static(world_map)
 
-        longitude, latitude, zoom = 117.153709, -0.502106, 5
-        Map.setCenter(longitude, latitude, zoom)
+centers = center()
 
-        years = [str(year) for year in range(2012, 2023)]
-        option_years = st.selectbox("Select Year", (years))
+world_map = folium.Map(tiles="OpenStreetMap", location=[centers[0], centers[1]], zoom_start=3)
 
-        quarterly = [str(year) for year in range(1, 5)]
-        option_quarter = st.selectbox("Select Quarter", (quarterly))
+show_maps(year, threshold(year))
 
-        Map.add_geojson(countries_geojson, layer_name="Boundary All Country")
-        Map.add_data(df, column="country", cmap='Blues', layer_name="Poverty Prediction")
-
-        # with st.expander("Data sources"):
-        #     st.markdown(markdown)
-
-    with col1:
-        Map.to_streamlit(height=750)
-
-
-###### Tab 2: Single Prediction with All Variables ######
-with pred_single_tab:
-    st.subheader("Predicting Poverty with NTL")
-    col2 = st.columns(2)
-
-    # Sliders for the variables
-    with col2[0]:
-        ntl = st.slider(
-            'NTL',
-            0.0, 1.0, 0.5)
-
-
-    # # Create dataframe for the features
-    # features = {
-    #             'NTL': ntl,
-    #             }
-    # features_df = pd.DataFrame([features])
-    #
-    #
-    # prediction = predict_poverty(features_df)
-    #
-    # # Display the prediction
-    # st.markdown('#### Predicted Poverty: ' + str(round(prediction[0], 2)))
-    # #st.markdown('#### Predicted Poverty: ' + str(30))
-
+# # Create multiple tabs
+# vis_tab, pred_single_tab  = st.tabs(["Map Visualization", ""])
+#
+# # import leafmap
+# # import geopandas as gpd
+# # import leafmap.leafmap as leafmap  # for ipyleaflet only
+#
+# # path_to_data = gpd.datasets.get_path("data/complile_poverty_ntl_viirs_all_country.xlsx")
+# # gdf = gpd.read_file(path_to_data, sheet_name="prediction_allcountries")
+# # print(gdf)
+#
+# ###### Tab 1: Visualisation ######
+# with vis_tab:
+#     col1, col2 = st.columns([4, 1])
+#     countries_geojson = 'data/countries.geojson'
+#
+#     Map = geemap.Map()
+#     Map.add_basemap("HYBRID")
+#
+#     # markdown = """
+#     #     - [Dynamic World Land Cover](https://developers.google.com/earth-engine/datasets/catalog/GOOGLE_DYNAMICWORLD_V1?hl=en)
+#     #     - [ESA Global Land Cover](https://developers.google.com/earth-engine/datasets/catalog/ESA_WorldCover_v100)
+#     #     - [ESRI Global Land Cover](https://samapriya.github.io/awesome-gee-community-datasets/projects/esrilc2020)
+#     #
+#     # """
+#
+#     with col2:
+#
+#         longitude, latitude, zoom = 117.153709, -0.502106, 5
+#         Map.setCenter(longitude, latitude, zoom)
+#
+#         years = [str(year) for year in range(2012, 2023)]
+#         option_years = st.selectbox("Select Year", (years))
+#
+#         quarterly = [str(year) for year in range(1, 5)]
+#         option_quarter = st.selectbox("Select Quarter", (quarterly))
+#
+#         Map.add_geojson(countries_geojson, layer_name="Boundary All Country")
+#         # Map.add_data(df, column="country", cmap='Blues', layer_name="Poverty Prediction")
+#         # Map.add_gdf(gdf, layer_name="Boundary All Country", fill_colors=["red", "green", "blue"])
+#
+#         # with st.expander("Data sources"):
+#         #     st.markdown(markdown)
+#
+#     with col1:
+#         Map.to_streamlit(height=750)
+#
+#
+# ###### Tab 2: Single Prediction with All Variables ######
+# with pred_single_tab:
+#     st.subheader("Predicting Poverty with NTL")
+#     col2 = st.columns(2)
+#
+#     # Sliders for the variables
+#     with col2[0]:
+#         ntl = st.slider(
+#             'NTL',
+#             0.0, 1.0, 0.5)
+#
+#
+#     # # Create dataframe for the features
+#     # features = {
+#     #             'NTL': ntl,
+#     #             }
+#     # features_df = pd.DataFrame([features])
+#     #
+#     #
+#     # prediction = predict_poverty(features_df)
+#     #
+#     # # Display the prediction
+#     # st.markdown('#### Predicted Poverty: ' + str(round(prediction[0], 2)))
+#     # #st.markdown('#### Predicted Poverty: ' + str(30))
+#
 
 
 
